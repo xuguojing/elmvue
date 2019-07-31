@@ -130,8 +130,8 @@ export default {
   }
 }
 .form_contianer {
-  .wh(420px, 310px);
-  .ctp(420px, 310px);
+  .wh(350px, 270px);
+  .ctp(350px, 180px);
   padding: 25px;
   border-radius: 5px;
   text-align: center;
@@ -144,7 +144,7 @@ export default {
 .tip {
   font-size: 12px;
   color: red;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 .form-fade-enter-active,
 .form-fade-leave-active {
