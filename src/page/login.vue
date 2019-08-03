@@ -1,7 +1,7 @@
 <template>
   <div class="login_page fillcontain">
     <transition name="form-fade" mode="in-out">
-      <section class="form_contianer" v-show="showLogin">
+      <section class="form_contianer">
         <div class="manage_tip">
           <p>elm后台管理系统</p>
         </div>
@@ -9,11 +9,12 @@
         <!-- from -->
         <div>
           <b-form @submit.prevent="submitForm(form)" :validated="isvalidated" ref="form">
+            <!-- 默认收集form -->
             <b-form-group
               label-cols="3"
               label-cols-lg="4"
               label-size="sm"
-              label="username:"
+              label="用户名称"
               label-for="input-username"
             >
               <b-form-input
@@ -23,12 +24,7 @@
                 placeholder="Enter username"
               ></b-form-input>
             </b-form-group>
-            <b-form-group
-              label-cols="3"
-              label-cols-lg="4"
-              label="password:"
-              label-for="input-password"
-            >
+            <b-form-group label-cols="3" label-cols-lg="4" label="密码" label-for="input-password">
               <b-form-input
                 id="input-2"
                 v-model="form.password"
@@ -42,7 +38,7 @@
               variant="primary"
               class="submit_btn"
               @click.prevent="submitForm(form)"
-            >Submit</b-button>
+            >登陆</b-button>
           </b-form>
         </div>
 
@@ -57,47 +53,48 @@
 <script>
 import { login, getAdminInfo } from "@/api/getData";
 import { mapActions, mapState } from "vuex";
-import Pubsub from "pubsub-js";
+
 export default {
   data() {
     return {
       isvalidated: true,
-      form: {
+      form: {  //初始化值
         username: "",
         password: ""
-      },
-      showLogin: false
+      }
     };
   },
-  mounted() {
-    this.showLogin = true;
-    if (!this.adminInfo.id) {
-      this.getAdminData();
+  created() {
+    var that = this;
+    if (that.$route.params.outusername === "outmanage") {  //判断路由是否传到值，有则提示
+      that.$bvToast.toast("退出成功", {
+        title: "成功提示",
+        toaster: "b-toaster-top-center",
+        autoHideDelay: 2000,
+        variant: "success"
+      });
     }
   },
-  computed: {
-    ...mapState(["adminInfo"])
-  },
-  methods: {
-    ...mapActions(["getAdminData"]),
 
+  methods: {
     //点击登陆方法
-    async submitForm(form) {     //  form  传form对象拿到username,password
-     console.log(form)
+    async submitForm(form) {
+      //  form  传form对象拿到username,password
+      console.log(form);
       if (this.isvalidated) {
-        const res = await login({    //传一个data对象  
+        const res = await login({
+          //传一个data对象
           user_name: form.username,
           password: form.password
         });
-    console.log(res)//拿到请求的值
+        console.log(res); //拿到请求的值
         if (res.status == 1) {
           this.$router.push({
             name: "manage",
             params: {
-              username:'manage'
+              username: "manage"
             }
           });
-          Pubsub.publish("isseccess", res);
         } else {
           this.$bvToast.toast(res.message, {
             title: "错误提示",
@@ -108,8 +105,6 @@ export default {
         }
       }
     }
-
-
   }
 };
 </script>
@@ -117,7 +112,7 @@ export default {
 <style lang="less" scoped>
 @import "../style/mixin";
 .login_page {
-  background-color: #324057;
+  background-color: #b8daff;
 }
 .manage_tip {
   position: absolute;
@@ -144,7 +139,7 @@ export default {
 .tip {
   font-size: 12px;
   color: red;
-  margin-top: 5px;
+  margin-top: 8px;
 }
 .form-fade-enter-active,
 .form-fade-leave-active {

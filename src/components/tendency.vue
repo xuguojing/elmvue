@@ -1,6 +1,6 @@
 <template>
     <div class="line1">
-        <div id="line1" class="" style="width: 90%;height:450px;"></div>
+        <div id="line1" style="width: 90%;height:450px;"></div>
     </div>
 </template>
 
@@ -19,9 +19,9 @@
             this.myChart = echarts.init(document.getElementById('line1'));
             this.initData();
         },
-        props: ['sevenDate', 'sevenDay'],
+        props: ['sevenDate', 'sevenDay'], //拿到显示数据、日期
         methods: {
-            initData(){
+            initData(){   //   写setOption 参数所需的数据
                 const colors = ['#5793f3', '#675bba', '#d14a61'];
                 const option = {
                     color: colors,
@@ -56,7 +56,7 @@
                           type: 'value',
                           name: '用户',
                           min: 0,
-                          max: 200,
+                          max: 300,
                           position: 'left',
                           axisLine: {
                               lineStyle: {
@@ -71,7 +71,7 @@
                           type: 'value',
                           name: '订单',
                           min: 0,
-                          max: 200,
+                          max:300,
                           position: 'right',
                           axisLine: {
                               lineStyle: {
@@ -126,10 +126,10 @@
             }
         },
         watch: {
-            sevenDate: function (){
+            sevenDate(){  //监视
                 this.initData()
             },
-            sevenDay: function (){
+            sevenDay(){
                 this.initData()
             }
         }

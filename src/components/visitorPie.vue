@@ -20,7 +20,7 @@
         methods: {
             initData(){
                 const option = {
-                    title : {
+                    title : {    //标题
                         text: '用户分布',
                         subtext: '',
                         x:'center'

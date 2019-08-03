@@ -10,11 +10,7 @@ const state = {
 	},
 }
 
-const mutations = {
-	saveAdminInfo(state, adminInfo){
-		state.adminInfo = adminInfo;
-	}
-}
+
 
 const actions = {
 	async getAdminData({commit}){
@@ -28,6 +24,12 @@ const actions = {
 		}catch(err){
 			// console.log(err.message)
 		}
+	}
+}
+
+const mutations = {
+	saveAdminInfo(state, adminInfo){
+		state.adminInfo = adminInfo;
 	}
 }
 
