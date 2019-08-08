@@ -12,20 +12,14 @@
         class="text-sm-center"
         userId="my-table"
         :per-page="perPage"
-      > 
-      <!-- 插槽1 操作 -->
+      >
+        <!-- 插槽1 操作 -->
         <template slot="Operation" slot-scope="row">
           <b-button
             size="sm"
-            @click="row.toggleDetails"
+            @click="getdetail(row)"
             class="mr-2"
           >{{ row.detailsShowing ? '显示' : '隐藏'}} 详细信息</b-button>
-
-          <b-button size="sm" class="mr-2">编辑</b-button>
-
-          <b-button size="sm" class="mr-2">添加食品</b-button>
-
-          <b-button variant="danger"  size="sm" class="mr-2">删除</b-button>
         </template>
 
         <!--插槽2 下拉详细信息 -->
@@ -33,57 +27,45 @@
           <b-card>
             <b-row class="mb-2">
               <b-col cols="2" class="text-sm-right">
+                <b>用户名:</b>
+              </b-col>
+              <b-col cols="2" class="text-sm-right">{{ row.item.user_name }}</b-col>
+              <b-col cols="4" class="text-sm-right">
                 <b>店铺名称:</b>
               </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.name }}</b-col>
-              <b-col cols="4" class="text-sm-right">
-                <b>店铺地址:</b>
-              </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.address }}</b-col>
+              <b-col cols="2" class="text-sm-right">{{ row.item.restaurant_name }}</b-col>
             </b-row>
             <b-row class="mb-2">
               <b-col cols="2" class="text-sm-right">
-                <b>店铺介绍:</b>
+                <b>收货地址:</b>
               </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.description}}</b-col>
+              <b-col cols="2" class="text-sm-right">{{ row.item.address}}</b-col>
               <b-col cols="4" class="text-sm-right">
                 <b>店铺 ID:</b>
               </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.id}}</b-col>
+              <b-col cols="2" class="text-sm-right">{{ row.item.restaurant_id}}</b-col>
             </b-row>
             <b-row class="mb-2">
               <b-col cols="2" class="text-sm-right">
-                <b>联系电话:</b>
+                <b>店铺地址:</b>
               </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.phone }}</b-col>
-              <b-col cols="4" class="text-sm-right">
-                <b>评分:</b>
-              </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.rating }}</b-col>
-            </b-row>
-            <b-row class="mb-2">
-              <b-col cols="2" class="text-sm-right">
-                <b>销售量:</b>
-              </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.recent_order_num }}</b-col>
-              <b-col cols="4" class="text-sm-right">
-                <b>分类:</b>
-              </b-col>
-              <b-col cols="2" class="text-sm-right">{{ row.item.category}}</b-col>
-            </b-row>
-            <b-row>
-              <b-col class="text-sm-center">
-                <b-button size="sm" @click="row.toggleDetails">隐藏 详细信息</b-button>
-              </b-col>
+              <b-col cols="2" class="text-sm-right">{{ row.item.restaurant_address }}</b-col>
             </b-row>
           </b-card>
         </template>
       </b-table>
       <!-- loading -->
-      <b-row   v-else  class="text-center">
-        <b-col> <b-spinner class="mt-5 mb-5"  style="width:6rem; height: 6rem;"  type="grow" label="Loading..."  variant='secondary' ></b-spinner></b-col>
+      <b-row v-else class="text-center">
+        <b-col>
+          <b-spinner
+            class="mt-5 mb-5"
+            style="width:6rem; height: 6rem;"
+            type="grow"
+            label="Loading..."
+            variant="secondary"
+          ></b-spinner>
+        </b-col>
       </b-row>
-     
       {{`共${this.count}条`}}
       <!-- 分页 -->
       <b-pagination
@@ -102,23 +84,21 @@
 import headTop from "../components/headTop";
 import { baseUrl, baseImgPath } from "@/config/env";
 import {
-  cityGuess,
-  getResturants,
-  getResturantsCount,
-  foodCategory,
-  updateResturant,
-  searchplace,
-  deleteResturant
+  getOrderList,
+  getOrderCount,
+  getResturantDetail,
+  getUserInfo,
+  getAddressById
 } from "@/api/getData";
 export default {
   data() {
     return {
       baseUrl,
       baseImgPath,
-
-      fields: ["name", "address", "description", "Operation"],
+      restaurant_id: null,
+      fields: ["id", "total_amount", "status", "Operation"],
       items: [],
-      city: {},//初始化城市经纬度
+      city: {}, //初始化城市经纬度
       offset: 0, //初始化推移n条数据
       limit: 10, //初始化请求n条数据
       count: 0, //初始化总数量
@@ -128,7 +108,6 @@ export default {
   },
   created() {
     this.initData();
-    console.log(11111);
   },
   computed: {
     rows() {
@@ -138,48 +117,88 @@ export default {
   methods: {
     async initData() {
       try {
-        this.city = await cityGuess();
-        const countData = await getResturantsCount();
+        const countData = await getOrderCount({
+          restaurant_id: this.restaurant_id
+        });
         if (countData.status == 1) {
           this.count = countData.count;
         } else {
           throw new Error("获取数据失败");
         }
-        this.getResturants();
+        this.getOrders();
       } catch (err) {
         console.log("获取数据失败", err);
       }
     },
 
-    async getResturants() {
-      const { latitude, longitude } = this.city;
-      const restaurants = await getResturants({
-        latitude,
-        longitude,
+    async getOrders() {
+      const Orders = await getOrderList({
         offset: this.offset,
-        limit: this.limit
+        limit: this.limit,
+        restaurant_id: this.restaurant_id
       });
-      console.log(restaurants);
       this.items = [];
-
-      // ["店铺名称"]: "Dickerson",
-      //     ["店铺地址"]: "Macdonald",
-      //     ["店铺介绍"]: "abc",
-      //     ["Operation"]: ""
-      restaurants.forEach(item => {
+      Orders.forEach(item => {
         const tableData = {};
-        tableData.name = item.name;
+        Orders.forEach((item, index) => {
+          const tableData = {};
+          tableData.id = item.id;
+          tableData.total_amount = item.total_amount;
+          tableData.status = item.status_bar.title;
+          tableData.user_id = item.user_id;
+          tableData.restaurant_id = item.restaurant_id;
+          tableData.address_id = item.address_id;
+          tableData.index = index;
 
-        tableData.address = item.address;
+          //详细信息
+          // tableData.user_name = "";
+          // tableData.restaurant_name = "";
+          // tableData.address = "";
+          // tableData.restaurant_address = "";
 
-        tableData.description = item.description;
-        tableData.id = item.id;
-        tableData.phone = item.phone;
-        tableData.rating = item.rating;
-        tableData.recent_order_num = item.recent_order_num;
-        tableData.category = item.category;
-        tableData.image_path = item.image_path;
-        this.items.push(tableData);
+          this.items.push(tableData);
+        });
+      });
+    },
+
+    //result[0]     .name      .address         restaurant_name   restaurant_address
+    //result[1]   .address                    address
+    //result[2]   .username                     user_name
+    getdetail(row) {
+      row.toggleDetails();
+
+      this.$nextTick(() => {
+        if (row.detailsShowing == false) {
+          Promise.all([
+            getResturantDetail(row.item.restaurant_id),
+            getUserInfo(row.item.user_id),
+            getAddressById(row.item.address_id)
+          ])
+            .then(result => {
+              const restaurant = result[0];
+
+              const userInfo = result[1];
+
+              const addressInfo = result[2];
+              this.items.splice(row.index, 1, {
+                ...row.item,
+                ...{
+                  restaurant_name: restaurant.name,
+                  restaurant_address: restaurant.address,
+                  address: addressInfo.address,
+                  user_name: userInfo.username
+                }
+              });
+            })
+            .catch(error => {
+              this.$bvToast.toast("数据获取失败", {
+                title: "错误提示",
+                autoHideDelay: 2000,
+                variant: "danger",
+                toaster: "b-toaster-top-center"
+              });
+            });
+        }
       });
     }
   },
@@ -191,7 +210,7 @@ export default {
     currentPage() {
       this.offset = (this.currentPage - 1) * this.limit;
       this.items = [];
-      this.getResturants();
+      this.getOrders();
     }
   }
 };

@@ -1,5 +1,5 @@
 import fetch from '@/config/fetch'
-
+import uploadfile from '@/config/uploadfile'
 /**
  * 登陆
  */
@@ -226,3 +226,7 @@ export const getAddressById = address_id => fetch('/v1/addresse/' + address_id);
  */
 
 export const getUserCity = () => fetch('/v1/user/city/count');
+
+//上传图片
+
+export const touploadfile = (type,file)=> uploadfile(`/v1/addimg/:${type}`,file);

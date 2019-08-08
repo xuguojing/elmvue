@@ -35,8 +35,8 @@ const explain = r =>
 const routes = [
     {
         path: "/",
-		component: login,
-		name:'login'
+        component: login,
+        name: "login"
     },
     {
         path: "/manage",
@@ -46,13 +46,13 @@ const routes = [
             {
                 path: "",
                 component: home,
-				mata: [], 
-				name:'home'
+                mata: [],
+                name: "home"
             },
             {
                 path: "/addShop",
                 component: addShop,
-                meta: ["数据管理", "添加商铺"]//给面包屑对应名称 用V-for渲染
+                meta: ["数据管理", "添加商铺"] //给面包屑对应名称 用V-for渲染
             },
             {
                 path: "/addGoods",
@@ -110,7 +110,6 @@ const routes = [
 ];
 
 export default new Router({
-    
     routes,
     strict: process.env.NODE_ENV !== "production"
 });
