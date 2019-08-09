@@ -150,12 +150,6 @@ export default {
           tableData.address_id = item.address_id;
           tableData.index = index;
 
-          //详细信息
-          // tableData.user_name = "";
-          // tableData.restaurant_name = "";
-          // tableData.address = "";
-          // tableData.restaurant_address = "";
-
           this.items.push(tableData);
         });
       });

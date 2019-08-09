@@ -353,7 +353,9 @@ export default {
 
     //选择图片之后激活此方法  上传图片
     async pushimape_path(file) {
-      const isLt3M = file.size / 1024 / 1024 < 3;
+       if (file) {
+        var isLt3M = file.size / 1024 / 1024 < 3;
+      }
       //验证图片大小
       if (isLt3M) {
         const get_address_path = await touploadfile("shop", file);
@@ -444,7 +446,7 @@ export default {
         query: { restaurant_id: row.item.id }
       });
     },
-    //删除食品
+    //删除
    async handleDelete(row){
         try{
             const res = await deleteResturant(row.item.id);
