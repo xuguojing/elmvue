@@ -174,6 +174,7 @@ export default {
               const userInfo = result[1];
 
               const addressInfo = result[2];
+              debugger
               this.items.splice(row.index, 1, {
                 ...row.item,
                 ...{
@@ -182,7 +183,8 @@ export default {
                   address: addressInfo.address,
                   user_name: userInfo.username
                 }
-              });
+                
+              });debugger
             })
             .catch(error => {
               this.$bvToast.toast("数据获取失败", {

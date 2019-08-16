@@ -22,7 +22,7 @@
             class="mr-2"
           >{{ row.detailsShowing ? '显示' : '隐藏'}} 详细信息</b-button>
 
-          <b-button @click="showmodal(row)" size="sm" class="mr-2">编辑</b-button>
+          <b-button @click="showmodal1(row)" size="sm" class="mr-2">编辑</b-button>
 
           <b-button @click="handleDelete(row)" variant="danger" size="sm" class="mr-2">删除</b-button>
         </template>
@@ -109,7 +109,7 @@
       ></b-pagination>
 
       <!-- 模态框 -->
-      <b-modal id="bv-modal-example" hide-footer>
+      <b-modal id="bv-modal-example1" hide-footer>
         <template slot="modal-title">修改食品信息</template>
 
         <div class="d-block text-center">
@@ -187,6 +187,8 @@
                 accept="image/jpeg, image/png, image/gif"
               ></b-form-file>
             </b-form-group>
+
+
 
             <b-form-group id="input-group-5" label-for="input-5">
               <b-table :items="specs" :fields="fields1" responsive="sm" ref="table">
@@ -311,7 +313,8 @@ export default {
         specs: "",
         packing_fee: 0,
         price: 0
-      }
+      },
+			form22:''
     };
   },
   created() {
@@ -330,7 +333,7 @@ export default {
             specs: item.specs_name,
             packing_fee: item.packing_fee,
             price: item.price
-          });
+          });0
         });
       }
       return specs;
@@ -443,12 +446,13 @@ export default {
       }
     },
 
-    showmodal(row) {
-      this.$bvModal.show("bv-modal-example");
+    showmodal1(row) {
+      this.form = [];
+      this.$bvModal.show("bv-modal-example1");
       this.getSelectItemData(row);
     },
     hidemodal() {
-      this.$bvModal.hide("bv-modal-example");
+      this.$bvModal.hide("bv-modal-example1");
     },
 
     //点击提交
@@ -456,11 +460,11 @@ export default {
     //上传图片
     async pushimape_path(file) {
       if (file) {
-        var isLt3M = file.size / 1024 / 1024 < 3;
+        var foodisLt3M = file.size / 1024 / 1024 < 3;
       }
 
       //验证图片大小
-      if (isLt3M) {
+      if (foodisLt3M) {
         const get_address_path = await touploadfile("food", file);
         const GAPparse = JSON.parse(get_address_path);
         if (GAPparse.status === 1) {
@@ -558,7 +562,13 @@ export default {
         this.specsForm.price > 0
       ) {
         //push specsForm给specs
-        this.specs.push(this.specsForm);
+				this.form22 = this.specsForm;
+		this.specs.push(this.form22);
+      this.specsForm = {
+        specs: "",
+        packing_fee: 0,
+        price: 0
+	  },
         //强制更新table
         this.$refs.table.refresh();
       } else {
@@ -587,11 +597,11 @@ export default {
             variant: "success",
             toaster: "b-toaster-top-center"
           });
-          this.$bvModal.hide("bv-modal-example");
+          this.$bvModal.hide("bv-modal-example1");
           console.log("成功提示");
         } else {
           console.log("错误提示");
-          this.$bvModal.hide("bv-modal-example");
+          this.$bvModal.hide("bv-modal-example1");
           this.$bvToast.toast("更新餐馆信息失败", {
             title: "错误提示",
             autoHideDelay: 2000,
@@ -607,7 +617,7 @@ export default {
           toaster: "b-toaster-top-center"
         });
         console.log("更新餐馆信息失败", err);
-        this.$bvModal.hide("bv-modal-example");
+        this.$bvModal.hide("bv-modal-example1");
       }
     },
     //列表删除按钮

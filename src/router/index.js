@@ -57,7 +57,8 @@ const routes = [
             {
                 path: "/addGoods",
                 component: addGoods,
-                meta: ["添加数据", "添加商品"]
+                meta: ["添加数据", "添加商品"],
+                
             },
             {
                 path: "/userList",

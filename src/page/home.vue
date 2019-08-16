@@ -108,7 +108,7 @@ export default {
   methods: {
     async initData() {
       const today = dtime(new Date().getTime()).format("YYYY-MM-DD"); //把日期格式化为"NaN-NaN-NaN"
-       console.log(today)
+      console.log(today);
       Promise.all([
         //因为需要多次请求，使用promise.all可以一次性请求
         userCount(today),
@@ -120,7 +120,7 @@ export default {
       ])
         .then(res => {
           this.userCount = res[0].count; //当日数据
-          console.log(res)
+          console.log(res);
           this.orderCount = res[1].count;
           this.adminCount = res[2].count;
           this.allUserCount = res[3].count; //总数据
@@ -139,17 +139,17 @@ export default {
         apiArr[1].push(orderCount(item));
         apiArr[2].push(adminDayCount(item));
       });
+      
       const promiseArr = [...apiArr[0], ...apiArr[1], ...apiArr[2]];
 
       Promise.all(promiseArr)
         .then(res => {
           const resArr = [[], [], []];
-
           res.forEach((item, index) => {
             if (item.status == 1) {
               resArr[Math.floor(index / 7)].push(item.count);
             }
-          });
+                      });
           this.sevenDate = resArr;
         })
         .catch(err => {

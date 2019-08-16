@@ -317,7 +317,9 @@ export default {
         offset: this.offset,
         limit: this.limit
       });
+
       this.items = [];
+
       restaurants.forEach(item => {
         const tableData = {};
         tableData.name = item.name;
@@ -336,6 +338,7 @@ export default {
     showmodal(row) {
       //点击编辑 显示模态框
       Object.assign(this.form, row.item);
+
       this.address = [];
       this.$bvModal.show("bv-modal-example");
       this.isShowaddress = false;
@@ -353,9 +356,7 @@ export default {
 
     //选择图片之后激活此方法  上传图片
     async pushimape_path(file) {
-       if (file) {
-        var isLt3M = file.size / 1024 / 1024 < 3;
-      }
+      const isLt3M = file.size / 1024 / 1024 < 3;
       //验证图片大小
       if (isLt3M) {
         const get_address_path = await touploadfile("shop", file);
@@ -395,7 +396,9 @@ export default {
 
         if (cityList instanceof Array) {
           let getData = cityList.map(item => item.address);
+
           this.address = getData;
+
           this.isShowaddress = true;
         }
       }
@@ -440,37 +443,34 @@ export default {
 
     //添加点击食品按钮
     addFood(row) {
-      console.log(row);
       this.$router.push({
         path: "addGoods",
         query: { restaurant_id: row.item.id }
       });
     },
-    //删除
-   async handleDelete(row){
-        try{
-            const res = await deleteResturant(row.item.id);
-            debugger;
-            if(res.status ==1){
-            this.$bvToast.toast("删除店铺成功", {
+    //删除食品
+    async handleDelete(row) {
+      try {
+        const res = await deleteResturant(row.item.id);
+        if (res.status == 1) {
+          this.$bvToast.toast("删除店铺成功", {
             title: "成功提示",
             toaster: "b-toaster-top-center",
             autoHideDelay: 2000,
             variant: "success"
           });
-          this.items.splice(row.index,1)
-            }
-            else{
-               throw new Error(res.message)
-            }
-        }catch(err){
-           this.$bvToast.toast(err.message, {
-            title: "错误提示",
-            autoHideDelay: 2000,
-             variant: "danger",
-            toaster: "b-toaster-top-center"
-          });
+          this.items.splice(row.index, 1);
+        } else {
+          throw new Error(res.message);
         }
+      } catch (err) {
+        this.$bvToast.toast(err.message, {
+          title: "错误提示",
+          autoHideDelay: 2000,
+          variant: "danger",
+          toaster: "b-toaster-top-center"
+        });
+      }
     }
   },
   components: {

@@ -58,7 +58,8 @@ export default {
   data() {
     return {
       isvalidated: true,
-      form: {  //初始化值
+      form: {
+        //初始化值
         username: "",
         password: ""
       }
@@ -66,7 +67,8 @@ export default {
   },
   created() {
     var that = this;
-    if (that.$route.params.outusername === "outmanage") {  //判断路由是否传到值，有则提示
+    if (that.$route.params.outusername === "outmanage") {
+      //判断路由是否传到值，有则提示
       that.$bvToast.toast("退出成功", {
         title: "成功提示",
         toaster: "b-toaster-top-center",
@@ -80,7 +82,6 @@ export default {
     //点击登陆方法
     async submitForm(form) {
       //  form  传form对象拿到username,password
-      console.log(form);
       if (this.isvalidated) {
         const res = await login({
           //传一个data对象
